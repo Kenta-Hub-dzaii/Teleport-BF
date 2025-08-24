@@ -1,0 +1,44 @@
+-- Đặt tên người chơi muốn teleport/bay theo
+getgenv().TargetName = "TênNgườiChơi"
+
+-- Cấu hình phím bật/tắt
+local toggleKey = Enum.KeyCode.B -- Nhấn phím B để bật/tắt
+
+-- Dịch vụ Roblox
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local lp = Players.LocalPlayer
+
+-- Biến trạng thái
+local followActive = false
+
+-- Hàm bay theo mục tiêu
+local function followTarget()
+    RunService.Heartbeat:Connect(function()
+        if followActive then
+            local targetPlayer = Players:FindFirstChild(getgenv().TargetName)
+            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                    lp.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                end
+            end
+        end
+    end)
+end
+
+-- Lắng nghe phím bật/tắt
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == toggleKey then
+        followActive = not followActive
+        if followActive then
+            print("Bay theo mục tiêu: BẬT")
+        else
+            print("Bay theo mục tiêu: TẮT")
+        end
+    end
+end)
+
+-- Gọi hàm theo dõi
+followTarget()
